@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="NeoWarewholesale.API/NeoWarewholesale.API.csproj" />
+  <Project Path="NeoWarewholesale.Tests/NeoWarewholesale.Tests.csproj" Id="ead8583a-c541-4470-a387-ce8767a8fddf" />
+</Solution>

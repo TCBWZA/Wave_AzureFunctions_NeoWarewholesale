@@ -1,0 +1,267 @@
+﻿using System.Threading;
+using Bogus;
+using NeoWarewholesale.API.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace NeoWarewholesale.API
+{
+    /// <summary>
+    /// Provides fake data generation using the Bogus library for testing and development.
+    /// Generates realistic customer and phone number data with globally unique IDs.
+    /// </summary>
+    public static class BogusDataGenerator
+    {
+        /// <summary>
+        /// Seeds the database with fake data. Creates customers with phone numbers, products, and orders.
+        /// </summary>
+        /// <param name="context">The database context to seed</param>
+        /// <param name="customerCount">Number of customers to create</param>
+        /// <param name="productCount">Number of products to create</param>
+        /// <param name="orderCount">Number of orders to create</param>
+        /// <param name="minPhoneNumbersPerCustomer">Minimum phone numbers per customer</param>
+        /// <param name="maxPhoneNumbersPerCustomer">Maximum phone numbers per customer</param>
+        /// <param name="minOrderItemsPerOrder">Minimum items per order</param>
+        /// <param name="maxOrderItemsPerOrder">Maximum items per order</param>
+        public static async Task SeedDatabase(
+            AppDbContext context,
+            int customerCount = 50,
+            int productCount = 50,
+            int orderCount = 100,
+            int minPhoneNumbersPerCustomer = 1,
+            int maxPhoneNumbersPerCustomer = 3,
+            int minOrderItemsPerOrder = 1,
+            int maxOrderItemsPerOrder = 5)
+        {
+            // Check if database already has data
+            var existingCustomerCount = await context.Customers.CountAsync();
+            if (existingCustomerCount > 0)
+            {
+                Console.WriteLine($"Database already contains {existingCustomerCount} customers. Skipping seed.");
+                return;
+            }
+
+            Console.WriteLine($"Database is empty. Starting seed process...");
+            Console.WriteLine($"Generating {customerCount} customers, {productCount} products, {orderCount} orders, and phone numbers...");
+
+            var random = new Random();
+
+            // Generate and save customers first to get their database-generated IDs
+            var customers = SeedCustomer(customerCount);
+            await context.Customers.AddRangeAsync(customers);
+            await context.SaveChangesAsync(); // Save to get IDs
+
+            Console.WriteLine($"✓ Created {customers.Count} customers");
+
+            var allPhoneNumbers = new List<TelephoneNumber>();
+
+            foreach (var customer in customers)
+            {
+                // Generate random number of phone numbers for this customer
+                int phoneCount = random.Next(minPhoneNumbersPerCustomer, maxPhoneNumbersPerCustomer + 1);
+                var phoneNumbers = GeneratePhoneNumbers(customer.Id, phoneCount);
+                allPhoneNumbers.AddRange(phoneNumbers);
+            }
+
+            Console.WriteLine($"✓ Generated {allPhoneNumbers.Count} phone numbers");
+
+            // Generate products
+            var products = GenerateProducts(productCount);
+            Console.WriteLine($"✓ Generated {products.Count} products");
+
+            // Add all phone numbers and products
+            await context.TelephoneNumbers.AddRangeAsync(allPhoneNumbers);
+            await context.Products.AddRangeAsync(products);
+
+            // Save changes to get product IDs
+            await context.SaveChangesAsync();
+
+            // Get suppliers (they are already seeded via HasData)
+            var suppliers = await context.Suppliers.ToListAsync();
+            Console.WriteLine($"✓ Found {suppliers.Count} suppliers");
+
+            // Generate orders
+            var orders = GenerateOrders(orderCount, customers, products, suppliers, random, minOrderItemsPerOrder, maxOrderItemsPerOrder);
+            Console.WriteLine($"✓ Generated {orders.Count} orders with {orders.Sum(o => o.OrderItems!.Count)} order items");
+
+            // Add orders (EF Core will automatically add OrderItems due to navigation property)
+            await context.Orders.AddRangeAsync(orders);
+
+            // Save all changes (orders and order items)
+            await context.SaveChangesAsync();
+
+            // Verify order items were saved
+            var savedOrderItems = await context.OrderItems.CountAsync();
+            Console.WriteLine($"✓ Saved {savedOrderItems} order items to database");
+
+            Console.WriteLine($"");
+            Console.WriteLine($"✓ Database seeded successfully!");
+            Console.WriteLine($"  Total: {customers.Count} customers, {products.Count} products, {suppliers.Count} suppliers, {orders.Count} orders, {allPhoneNumbers.Count} phone numbers");
+        }
+
+        /// <summary>
+        /// Generates a list of fake customers with realistic company names and email addresses.
+        /// IDs will be auto-generated by the database.
+        /// </summary>
+        /// <param name="count">The number of customers to generate</param>
+        /// <returns>A list of Customer objects with generated data</returns>
+        public static List<Customer> SeedCustomer(int count)
+        {
+            Faker<Customer> faker = new Faker<Customer>("en_GB")
+                .CustomInstantiator(f => new Customer
+                {
+                    Name = f.Company.CompanyName(),
+                    Email = f.Internet.Email()
+                });
+
+            List<Customer> list = [];
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(faker.Generate());
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Generates a list of fake products with realistic names and unique product codes.
+        /// IDs and ProductCodes will be auto-generated (ProductCode uses default Guid.NewGuid()).
+        /// </summary>
+        /// <param name="count">The number of products to generate</param>
+        /// <returns>A list of Product objects with generated data</returns>
+        public static List<Product> GenerateProducts(int count)
+        {
+            Faker<Product> faker = new Faker<Product>("en_GB")
+                .CustomInstantiator(f => new Product
+                {
+                    Name = f.Commerce.ProductName()
+                });
+
+            List<Product> list = [];
+            for (int i = 0; i < count; i++)
+            {
+                list.Add(faker.Generate());
+            }
+
+            return list;
+        }
+
+        // Valid phone number types for random selection
+        private static readonly string[] NumberTypes = new[] { "DirectDial", "Work", "Mobile" };
+        private static readonly List<string> MobilePrefixes = new() { "071", "072", "073", "074", "075", "076", "077", "078", "079" };
+        private static readonly List<string> landLinePrefix = new()
+        {
+            "+44 20",   // London
+            "+44 121",  // Birmingham
+            "+44 131",  // Edinburgh
+            "+44 141",  // Glasgow
+            "+44 151",  // Liverpool
+            "+44 161",  // Manchester
+            "+44 191"   // Tyneside
+        };
+
+        /// <summary>
+        /// Generates a list of fake phone numbers for a specific customer.
+        /// Phone number IDs will be auto-generated by the database.
+        /// Generates UK-formatted phone numbers with random types (Mobile, DirectDial, or Work).
+        /// </summary>
+        /// <param name="custId">The customer ID to associate with the generated phone numbers</param>
+        /// <param name="count">The number of phone numbers to generate</param>
+        /// <returns>A list of TelephoneNumber objects with generated data</returns>
+        public static List<TelephoneNumber> GeneratePhoneNumbers(long custId, int count)
+        {
+            Faker<TelephoneNumber> fakerphone = new Faker<TelephoneNumber>("en_GB")
+                .CustomInstantiator(f => new TelephoneNumber
+                {
+                    CustomerId = custId,
+                    Number = f.Phone.PhoneNumber(),
+                    Type = f.PickRandom(NumberTypes)
+                });
+            List<TelephoneNumber> listPhone = [];
+            for (int i = 0; i < count; i++)
+            {
+                listPhone.Add(fakerphone.Generate());
+            }
+            return listPhone;
+        }
+
+        /// <summary>
+        /// Generates a list of fake orders with order items.
+        /// Order IDs and OrderItem IDs will be auto-generated by the database.
+        /// Each order will have a random number of items from the available products.
+        /// </summary>
+        /// <param name="orderCount">The number of orders to generate</param>
+        /// <param name="customers">List of customers to assign orders to</param>
+        /// <param name="products">List of products to use in order items</param>
+        /// <param name="suppliers">List of suppliers to use as order sources</param>
+        /// <param name="random">Random instance for generating counts</param>
+        /// <param name="minItemsPerOrder">Minimum items per order</param>
+        /// <param name="maxItemsPerOrder">Maximum items per order</param>
+        /// <returns>A list of Order objects with OrderItems</returns>
+        public static List<Order> GenerateOrders(
+            int orderCount,
+            List<Customer> customers,
+            List<Product> products,
+            List<Supplier> suppliers,
+            Random random,
+            int minItemsPerOrder = 1,
+            int maxItemsPerOrder = 5)
+        {
+            List<Order> orders = [];
+            Faker faker = new Faker("en_GB");
+
+            for (int i = 0; i < orderCount; i++)
+            {
+                // Pick a random customer and supplier
+                var customer = faker.PickRandom(customers);
+                var supplier = faker.PickRandom(suppliers);
+
+                // Generate order with addresses and random status
+                Order order = new Order
+                {
+                    CustomerId = customer.Id,
+                    SupplierId = supplier.Id,
+                    OrderDate = faker.Date.Between(DateTime.UtcNow.AddYears(-1), DateTime.UtcNow),
+                    CustomerEmail = customer.Email,
+                    OrderStatus = faker.PickRandom<OrderStatus>(),
+                    BillingAddress = new Address
+                    {
+                        Street = faker.Address.StreetAddress(),
+                        City = faker.Address.City(),
+                        County = faker.Address.County(),
+                        PostalCode = faker.Address.ZipCode(),
+                        Country = "United Kingdom"
+                    },
+                    DeliveryAddress = new Address
+                    {
+                        Street = faker.Address.StreetAddress(),
+                        City = faker.Address.City(),
+                        County = faker.Address.County(),
+                        PostalCode = faker.Address.ZipCode(),
+                        Country = "United Kingdom"
+                    },
+                    OrderItems = new List<OrderItem>()
+                };
+
+                // Generate random number of order items
+                int itemCount = random.Next(minItemsPerOrder, maxItemsPerOrder + 1);
+                var selectedProducts = faker.PickRandom(products, itemCount).ToList();
+
+                foreach (var product in selectedProducts)
+                {
+                    OrderItem orderItem = new OrderItem
+                    {
+                        ProductId = product.Id,
+                        Quantity = faker.Random.Int(1, 10),
+                        Price = faker.Finance.Amount(5, 500)
+                    };
+
+                    order.OrderItems.Add(orderItem);
+                }
+
+                orders.Add(order);
+            }
+
+            return orders;
+        }
+    }
+}
