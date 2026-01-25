@@ -36,6 +36,7 @@ namespace NeoWarewholesale.Tests.Models
             // Arrange
             var order = new Order
             {
+                BillingAddress = new Address { Street = "123 Test St" },
                 OrderItems = new List<OrderItem>()
             };
 
