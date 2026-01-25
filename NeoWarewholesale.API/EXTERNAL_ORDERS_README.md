@@ -1,4 +1,4 @@
-# External Orders Integration - Azure Functions Teaching Framework
+﻿# External Orders Integration - Azure Functions Teaching Framework
 
 ## Overview
 This project demonstrates how to accept orders from different suppliers with different data formats and normalize them into your internal Order model. This is a common real-world scenario for B2B integrations.
@@ -15,14 +15,14 @@ You work for NeoWarehouse, a wholesale company. Two suppliers (Speedy and Vault)
 ### Files Structure
 ```
 DTOs/External/
-??? SpeedyOrderDto.cs      # Speedy's order format
-??? VaultOrderDto.cs       # Vault's order format
+├── SpeedyOrderDto.cs      # Speedy's order format
+└── VaultOrderDto.cs       # Vault's order format
 
 Mappings/
-??? ExternalOrderMappingExtensions.cs  # Conversion logic
+└── ExternalOrderMappingExtensions.cs  # Conversion logic
 
 Controllers/
-??? ExternalOrdersController.cs        # API endpoints
+└── ExternalOrdersController.cs        # API endpoints
 ```
 
 ### Endpoints
