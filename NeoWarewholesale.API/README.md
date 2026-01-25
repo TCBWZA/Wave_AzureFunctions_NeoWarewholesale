@@ -38,7 +38,7 @@ This API provides a centralized system for managing:
 
 ## Getting Started
 
-?? **QUICK START TIP**: After running migrations, the database will be **automatically seeded** with sample data (customers, products, orders) on first application start. See section 6 below for details.
+⚠️ **QUICK START TIP**: After running migrations, the database will be **automatically seeded** with sample data (customers, products, orders) on first application start. See section 6 below for details.
 
 ### 1. Clone the Repository
 
