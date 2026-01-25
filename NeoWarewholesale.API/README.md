@@ -1,4 +1,4 @@
-# NeoWarewholesale API
+﻿# NeoWarewholesale API
 
 A .NET 8 Web API for wholesale order management with support for multiple supplier integrations.
 
@@ -225,7 +225,7 @@ SELECT COUNT(*) FROM Suppliers;  -- Should have 2 records
 
 ### Creating New Migrations (Local Tools)
 
-```bash
+```powershell
 cd NeoWarewholesale.API
 
 # Create a new migration
@@ -240,7 +240,7 @@ dotnet tool run dotnet-ef migrations remove
 
 ### Creating New Migrations (Global Tools)
 
-```bash
+```powershell
 cd NeoWarewholesale.API
 
 # Create a new migration
@@ -255,7 +255,7 @@ dotnet ef migrations remove
 
 ### Database Commands Reference
 
-```bash
+```powershell
 # List all migrations
 dotnet tool run dotnet-ef migrations list
 
@@ -299,44 +299,44 @@ dotnet tool run dotnet-ef database update
 
 ```
 NeoWarewholesale.API/
-??? Controllers/
-?   ??? CustomersController.cs
-?   ??? ProductsController.cs
-?   ??? OrdersController.cs
-?   ??? SuppliersController.cs
-?   ??? ExternalOrdersController.cs
-??? Data/
-?   ??? AppDbContext.cs
-?   ??? Migrations/
-??? DTOs/
-?   ??? External/
-?   ?   ??? SpeedyOrderDto.cs
-?   ?   ??? VaultOrderDto.cs
-?   ??? CreateOrderDto.cs
-?   ??? OrderDto.cs
-?   ??? ... (other DTOs)
-??? Mappings/
-?   ??? ExternalOrderMappings.cs
-?   ??? DtoMappingExtensions.cs
-??? Models/
-?   ??? Customer.cs
-?   ??? Product.cs
-?   ??? Order.cs
-?   ??? OrderItem.cs
-?   ??? Supplier.cs
-?   ??? Address.cs
-??? Repositories/
-?   ??? Interfaces/
-?   ?   ??? ICustomerRepository.cs
-?   ?   ??? IProductRepository.cs
-?   ?   ??? IOrderRepository.cs
-?   ??? Implementations/
-?       ??? CustomerRepository.cs
-?       ??? ProductRepository.cs
-?       ??? OrderRepository.cs
-??? Program.cs
-??? appsettings.json
-??? NeoWarewholesale.API.csproj
+├── Controllers/
+│   ├── CustomersController.cs
+│   ├── ProductsController.cs
+│   ├── OrdersController.cs
+│   ├── SuppliersController.cs
+│   └── ExternalOrdersController.cs
+├── Data/
+│   ├── AppDbContext.cs
+│   └── Migrations/
+├── DTOs/
+│   ├── External/
+│   │   ├── SpeedyOrderDto.cs
+│   │   └── VaultOrderDto.cs
+│   ├── CreateOrderDto.cs
+│   ├── OrderDto.cs
+│   └── ... (other DTOs)
+├── Mappings/
+│   ├── ExternalOrderMappings.cs
+│   └── DtoMappingExtensions.cs
+├── Models/
+│   ├── Customer.cs
+│   ├── Product.cs
+│   ├── Order.cs
+│   ├── OrderItem.cs
+│   ├── Supplier.cs
+│   └── Address.cs
+├── Repositories/
+│   ├── Interfaces/
+│   │   ├── ICustomerRepository.cs
+│   │   ├── IProductRepository.cs
+│   │   └── IOrderRepository.cs
+│   └── Implementations/
+│       ├── CustomerRepository.cs
+│       ├── ProductRepository.cs
+│       └── OrderRepository.cs
+├── Program.cs
+├── appsettings.json
+└── NeoWarewholesale.API.csproj
 ```
 
 ---
