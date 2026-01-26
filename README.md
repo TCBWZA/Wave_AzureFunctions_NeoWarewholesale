@@ -13,7 +13,7 @@ By completing this module, students will learn:
 1. **API Development** - Building RESTful APIs with .NET 8
 2. **Supplier Integration** - Handling multiple data formats from external systems
 3. **Data Transformation** - Converting between supplier-specific and internal formats
-4. **Azure Functions** - Creating HTTP-triggered functions in isolated worker model
+4. **Azure Functions** - Creating HTTP-triggered functions in an isolated worker model
 5. **Testing** - Writing comprehensive unit tests with Moq and NUnit
 6. **Entity Framework Core** - Database operations with Code First approach
 
@@ -157,12 +157,12 @@ Modern serverless patterns:
 Follow [AZURE_FUNCTIONS_LAB_INSTRUCTIONS.md](NeoWarewholesale.API/AZURE_FUNCTIONS_LAB_INSTRUCTIONS.md) to:
 1. Create a new Azure Functions project (.NET 8 isolated)
 2. Copy required DTOs (watch for namespace considerations!)
-3. Implement HTTP trigger function
+3. Implement the HTTP trigger function
 4. Call the main API via HTTP
 5. Test locally
 
 ### **Task 3: Create Vault Azure Function**
-1. Create function to handle Vault's format
+1. Create a function to handle Vault's format
 2. Handle ProductCode → ProductId resolution
 3. Convert Unix timestamps
 4. Test with sample data
@@ -189,8 +189,8 @@ Students successfully complete the module when they can:
 
 ## 🛠️ Technologies Used
 
-- **.NET 8** - Latest LTS version
-- **C# 12** - Latest language features
+- **.NET 8** - LTS version
+- **C# 12** - Language features
 - **ASP.NET Core Web API** - RESTful services
 - **Azure Functions (Isolated Worker)** - Serverless compute
 - **Entity Framework Core 8** - ORM and migrations
@@ -207,7 +207,7 @@ Students successfully complete the module when they can:
 1. Read the comprehensive documentation in each folder
 2. Check the troubleshooting sections in README files
 3. Review the test suite for implementation examples
-4. Consult with your instructor or lab assistant
+4. Consult with your instructor
 
 ### General Instructions:
 - Sample implementations provided in AZURE_FUNCTIONS_EXAMPLES.md (Not yet released.)
@@ -220,7 +220,7 @@ Students successfully complete the module when they can:
 
 This module includes:
 - **Practical Labs** - Hands-on Azure Functions development
-- **Testing** - Students should write tests for their functions
+- **Testing** - Students should test their functions
 - **Documentation** - Students document their design decisions in comments
 
 ---
