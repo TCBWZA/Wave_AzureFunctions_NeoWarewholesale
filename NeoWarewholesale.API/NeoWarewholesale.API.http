@@ -1,6 +1,433 @@
 @NeoWarewholesale.API_HostAddress = http://localhost:5155
+@ContentType = application/json
 
-GET {{NeoWarewholesale.API_HostAddress}}/weatherforecast/
-Accept: application/json
+###############################################################################
+# NeoWarewholesale API - Complete Endpoint Examples
+# Update the HostAddress above to match your running API port
+# Look for: "Now listening on: http://localhost:XXXX" in console output
+###############################################################################
 
-###
+###############################################################################
+# CUSTOMERS
+###############################################################################
+
+### Get All Customers
+GET {{NeoWarewholesale.API_HostAddress}}/api/customers
+Accept: {{ContentType}}
+
+### Get Customer by ID
+GET {{NeoWarewholesale.API_HostAddress}}/api/customers/1
+Accept: {{ContentType}}
+
+### Search Customer by Email
+GET {{NeoWarewholesale.API_HostAddress}}/api/customers/search?email=john.doe@example.com
+Accept: {{ContentType}}
+
+### Create Customer
+POST {{NeoWarewholesale.API_HostAddress}}/api/customers
+Content-Type: {{ContentType}}
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "phoneNumbers": [
+    {
+      "number": "+44 7700 900123",
+      "type": "Mobile"
+    },
+    {
+      "number": "+44 20 7946 0958",
+      "type": "Work"
+    }
+  ]
+}
+
+### Update Customer
+PUT {{NeoWarewholesale.API_HostAddress}}/api/customers/1
+Content-Type: {{ContentType}}
+
+{
+  "name": "John Doe Updated",
+  "email": "john.doe.updated@example.com",
+  "phoneNumbers": [
+    {
+      "number": "+44 7700 900456",
+      "type": "Mobile"
+    }
+  ]
+}
+
+### Delete Customer
+DELETE {{NeoWarewholesale.API_HostAddress}}/api/customers/999
+Accept: {{ContentType}}
+
+###############################################################################
+# PRODUCTS
+###############################################################################
+
+### Get All Products
+GET {{NeoWarewholesale.API_HostAddress}}/api/products
+Accept: {{ContentType}}
+
+### Get Product by ID
+GET {{NeoWarewholesale.API_HostAddress}}/api/products/1
+Accept: {{ContentType}}
+
+### Get Product by ProductCode (GUID)
+# Replace the GUID below with an actual ProductCode from your database
+GET {{NeoWarewholesale.API_HostAddress}}/api/products/code/550e8400-e29b-41d4-a716-446655440000
+Accept: {{ContentType}}
+
+### Create Product
+POST {{NeoWarewholesale.API_HostAddress}}/api/products
+Content-Type: {{ContentType}}
+
+{
+  "productCode": "550e8400-e29b-41d4-a716-446655440001",
+  "name": "Widget Pro",
+  "description": "High-quality widget for professional use",
+  "price": 99.99
+}
+
+### Update Product
+PUT {{NeoWarewholesale.API_HostAddress}}/api/products/1
+Content-Type: {{ContentType}}
+
+{
+  "productCode": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "Widget Pro Updated",
+  "description": "Updated description",
+  "price": 109.99
+}
+
+### Delete Product
+DELETE {{NeoWarewholesale.API_HostAddress}}/api/products/999
+Accept: {{ContentType}}
+
+###############################################################################
+# SUPPLIERS
+###############################################################################
+
+### Get All Suppliers
+GET {{NeoWarewholesale.API_HostAddress}}/api/suppliers
+Accept: {{ContentType}}
+
+### Get Supplier by ID
+GET {{NeoWarewholesale.API_HostAddress}}/api/suppliers/1
+Accept: {{ContentType}}
+
+### Create Supplier
+POST {{NeoWarewholesale.API_HostAddress}}/api/suppliers
+Content-Type: {{ContentType}}
+
+{
+  "name": "New Supplier Ltd"
+}
+
+### Update Supplier
+PUT {{NeoWarewholesale.API_HostAddress}}/api/suppliers/3
+Content-Type: {{ContentType}}
+
+{
+  "name": "Updated Supplier Name"
+}
+
+### Delete Supplier
+DELETE {{NeoWarewholesale.API_HostAddress}}/api/suppliers/999
+Accept: {{ContentType}}
+
+###############################################################################
+# ORDERS
+###############################################################################
+
+### Get All Orders
+GET {{NeoWarewholesale.API_HostAddress}}/api/orders
+Accept: {{ContentType}}
+
+### Get Order by ID
+GET {{NeoWarewholesale.API_HostAddress}}/api/orders/1
+Accept: {{ContentType}}
+
+### Get Orders by Supplier
+GET {{NeoWarewholesale.API_HostAddress}}/api/orders/supplier/1?includeRelated=true
+Accept: {{ContentType}}
+
+### Create Order
+POST {{NeoWarewholesale.API_HostAddress}}/api/orders
+Content-Type: {{ContentType}}
+
+{
+  "customerId": 1,
+  "supplierId": 1,
+  "orderDate": "2024-01-15T10:30:00Z",
+  "orderStatus": "Received",
+  "billingAddress": {
+    "street": "123 Billing St",
+    "city": "London",
+    "county": "Greater London",
+    "postalCode": "SW1A 1AA",
+    "country": "United Kingdom"
+  },
+  "deliveryAddress": {
+    "street": "456 Delivery Ave",
+    "city": "Manchester",
+    "county": "Greater Manchester",
+    "postalCode": "M1 1AA",
+    "country": "United Kingdom"
+  },
+  "orderItems": [
+    {
+      "productId": 1,
+      "quantity": 5,
+      "price": 29.99
+    },
+    {
+      "productId": 2,
+      "quantity": 3,
+      "price": 49.99
+    }
+  ]
+}
+
+### Update Order
+PUT {{NeoWarewholesale.API_HostAddress}}/api/orders/1
+Content-Type: {{ContentType}}
+
+{
+  "customerId": 1,
+  "supplierId": 1,
+  "orderDate": "2024-01-15T10:30:00Z",
+  "orderStatus": "Picking",
+  "billingAddress": {
+    "street": "123 Billing St",
+    "city": "London",
+    "county": "Greater London",
+    "postalCode": "SW1A 1AA",
+    "country": "United Kingdom"
+  },
+  "orderItems": [
+    {
+      "productId": 1,
+      "quantity": 10,
+      "price": 29.99
+    }
+  ]
+}
+
+### Delete Order
+DELETE {{NeoWarewholesale.API_HostAddress}}/api/orders/999
+Accept: {{ContentType}}
+
+###############################################################################
+# EXTERNAL ORDERS - TRANSFORM ONLY (No Database Save)
+###############################################################################
+
+### Transform Speedy Order (No Save)
+# Demonstrates data transformation without persistence
+POST {{NeoWarewholesale.API_HostAddress}}/api/externalorders/fromspeedy
+Content-Type: {{ContentType}}
+
+{
+  "customerId": 1,
+  "orderTimestamp": "2024-01-15T10:30:00Z",
+  "billTo": {
+    "streetAddress": "123 Main St",
+    "city": "London",
+    "region": "Greater London",
+    "postCode": "SW1A 1AA",
+    "country": "United Kingdom"
+  },
+  "shipTo": {
+    "streetAddress": "456 High Street",
+    "city": "Manchester",
+    "region": "Greater Manchester",
+    "postCode": "M1 1AA",
+    "country": "United Kingdom"
+  },
+  "lineItems": [
+    {
+      "productId": 1,
+      "qty": 5,
+      "unitPrice": 29.99
+    },
+    {
+      "productId": 2,
+      "qty": 3,
+      "unitPrice": 49.99
+    }
+  ],
+  "priority": "express"
+}
+
+### Transform Vault Order (No Save)
+# Demonstrates complex transformation with ProductCode lookup
+# Replace ProductCode GUIDs with actual values from your database
+POST {{NeoWarewholesale.API_HostAddress}}/api/externalorders/fromvault
+Content-Type: {{ContentType}}
+
+{
+  "customerEmail": "user@example.com",
+  "placedAt": 1705315800,
+  "deliveryDetails": {
+    "billingLocation": {
+      "addressLine": "123 Billing Road",
+      "cityName": "London",
+      "stateProvince": "Greater London",
+      "zipPostal": "SW1A 1AA",
+      "countryCode": "GB"
+    },
+    "shippingLocation": {
+      "addressLine": "456 Shipping Ave",
+      "cityName": "Manchester",
+      "stateProvince": "Greater Manchester",
+      "zipPostal": "M1 1AA",
+      "countryCode": "GB"
+    }
+  },
+  "items": [
+    {
+      "productCode": "550e8400-e29b-41d4-a716-446655440000",
+      "quantityOrdered": 3,
+      "pricePerUnit": 49.99
+    }
+  ],
+  "fulfillmentInstructions": "Handle with care"
+}
+
+###############################################################################
+# EXTERNAL ORDERS - FULL INTEGRATION (With Database Save)
+###############################################################################
+
+### Create Speedy Order (Validate & Save)
+# Full integration: validates customer/products and saves to database
+POST {{NeoWarewholesale.API_HostAddress}}/api/externalorders/speedycreate
+Content-Type: {{ContentType}}
+
+{
+  "customerId": 1,
+  "orderTimestamp": "2024-01-15T10:30:00Z",
+  "billTo": {
+    "streetAddress": "123 Main St",
+    "city": "London",
+    "region": "Greater London",
+    "postCode": "SW1A 1AA",
+    "country": "United Kingdom"
+  },
+  "shipTo": {
+    "streetAddress": "456 High Street",
+    "city": "Manchester",
+    "region": "Greater Manchester",
+    "postCode": "M1 1AA",
+    "country": "United Kingdom"
+  },
+  "lineItems": [
+    {
+      "productId": 1,
+      "qty": 5,
+      "unitPrice": 29.99
+    }
+  ],
+  "priority": "standard"
+}
+
+### Create Vault Order (Validate & Save)
+# Full integration: resolves ProductCodes and saves to database
+# Replace ProductCode GUIDs with actual values from your database
+POST {{NeoWarewholesale.API_HostAddress}}/api/externalorders/vaultcreate
+Content-Type: {{ContentType}}
+
+{
+  "customerEmail": "user@example.com",
+  "placedAt": 1705315800,
+  "deliveryDetails": {
+    "billingLocation": {
+      "addressLine": "123 Billing Road",
+      "cityName": "London",
+      "stateProvince": "Greater London",
+      "zipPostal": "SW1A 1AA",
+      "countryCode": "GB"
+    },
+    "shippingLocation": {
+      "addressLine": "456 Shipping Ave",
+      "cityName": "Manchester",
+      "stateProvince": "Greater Manchester",
+      "zipPostal": "M1 1AA",
+      "countryCode": "GB"
+    }
+  },
+  "items": [
+    {
+      "productCode": "550e8400-e29b-41d4-a716-446655440000",
+      "quantityOrdered": 3,
+      "pricePerUnit": 49.99
+    }
+  ],
+  "fulfillmentInstructions": "Fragile - handle with care"
+}
+
+### Get Supported Suppliers
+# Returns information about Speedy and Vault integration
+GET {{NeoWarewholesale.API_HostAddress}}/api/externalorders/suppliers
+Accept: {{ContentType}}
+
+###############################################################################
+# ERROR TESTING - Invalid Requests
+###############################################################################
+
+### Test Invalid Customer ID (should return 400)
+POST {{NeoWarewholesale.API_HostAddress}}/api/externalorders/speedycreate
+Content-Type: {{ContentType}}
+
+{
+  "customerId": 99999,
+  "orderTimestamp": "2024-01-15T10:30:00Z",
+  "lineItems": [
+    {
+      "productId": 1,
+      "qty": 5,
+      "unitPrice": 29.99
+    }
+  ]
+}
+
+### Test Invalid Product Code (should return 400)
+POST {{NeoWarewholesale.API_HostAddress}}/api/externalorders/vaultcreate
+Content-Type: {{ContentType}}
+
+{
+  "customerEmail": "test@example.com",
+  "placedAt": 1705315800,
+  "items": [
+    {
+      "productCode": "00000000-0000-0000-0000-000000000000",
+      "quantityOrdered": 1,
+      "pricePerUnit": 10.00
+    }
+  ]
+}
+
+###############################################################################
+#  NOTES
+###############################################################################
+### Important Setup Instructions 
+###  1. Update @NeoWarewholesale.API_HostAddress to match your API's actual port
+###     Check console output: "Now listening on: http://localhost:XXXX"
+### 
+###  2. Replace GUID ProductCodes with actual values from your database:
+###     Run: SELECT TOP 5 Id, ProductCode, Name FROM Products
+### 
+###  3. Customer IDs and Product IDs depend on your seeded data
+###     Default seeding creates:
+###     - 10 Customers (IDs 1-10)
+###     - 20 Products (IDs 1-20)
+###     - 2 Suppliers (ID 1=Speedy, ID 2=Vault)
+### 
+###  4. For detailed API documentation, see:
+###     - NeoWarewholesale.API/README.md
+###     - NeoWarewholesale.API/ENDPOINTS_SUMMARY.md
+### 
+###  5. Phone number types: Mobile, Work, DirectDial
+### 
+###  6. Order statuses: Received (0), Picking (1), Dispatched (2), Delivered (3)
+### 
+### 
