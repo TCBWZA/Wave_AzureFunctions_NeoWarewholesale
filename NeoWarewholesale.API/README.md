@@ -42,7 +42,7 @@ This API provides a centralized system for managing:
 
 ### 1. Clone the Repository
 
-```bash
+```powershell
 git clone <repository-url>
 cd NeoWarewholesale
 ```
@@ -75,11 +75,11 @@ For PostgreSQL (requires Npgsql.EntityFrameworkCore.PostgreSQL package):
 
 #### Option A: Local Tool Manifest (Recommended for Corp Environments)
 
-```bash
+```powershell
 # Navigate to the API project folder
 cd NeoWarewholesale.API
 
-# Create a local tool manifest (if not exists)
+# Create a local tool manifest (if it does not exists)
 dotnet new tool-manifest
 
 # Install EF Core tools locally
@@ -91,7 +91,7 @@ dotnet tool list
 
 #### Option B: Global Installation (If Permissions Allow)
 
-```bash
+```powershell
 # Install globally
 dotnet tool install --global dotnet-ef
 
@@ -103,7 +103,7 @@ dotnet ef --version
 
 When tools are installed locally, prefix commands with `dotnet tool run`:
 
-```bash
+```powershell
 # Check EF Core tools version
 dotnet tool run dotnet-ef --version
 
@@ -114,7 +114,7 @@ dotnet dotnet-ef --version
 ### 4. Apply Database Migrations
 
 #### Using Local Tools:
-```bash
+```powershell
 # Navigate to API project
 cd NeoWarewholesale.API
 
@@ -126,7 +126,7 @@ dotnet tool run dotnet-ef database update --project NeoWarewholesale.API
 ```
 
 #### Using Global Tools:
-```bash
+```powershell
 # From API project folder
 dotnet ef database update
 
@@ -279,7 +279,7 @@ dotnet tool run dotnet-ef dbcontext info
 
 #### Issue: "No tool manifest found"
 **Solution:** Create manifest first:
-```bash
+```powershell
 dotnet new tool-manifest
 ```
 
@@ -288,7 +288,7 @@ dotnet new tool-manifest
 
 #### Issue: "Build failed" when running EF commands
 **Solution:** Build the project first:
-```bash
+```powershell
 dotnet build
 dotnet tool run dotnet-ef database update
 ```
@@ -474,7 +474,7 @@ See [AZURE_FUNCTIONS_LAB_INSTRUCTIONS.md](AZURE_FUNCTIONS_LAB_INSTRUCTIONS.md) f
 
 ### 1. Making Model Changes
 
-```bash
+```powershell
 # Edit your model classes in Models/
 
 # Create migration
@@ -513,11 +513,14 @@ public class YourController : ControllerBase
 
 ### 4. Testing Your Changes
 
-```bash
+```powershell
 # Run the API
 dotnet run
 
-# Test with curl
+# Test with Invoke-RestMethod
+Invoke-RestMethod -Uri "https://localhost:7001/api/customers" -Method Get
+
+# Or use curl (if installed)
 curl -X GET https://localhost:7001/api/customers
 
 # Test with Postman or VS Code REST Client
@@ -633,7 +636,7 @@ For questions or issues:
 
 ## Quick Reference: EF Core Commands (Local Tools)
 
-```bash
+```powershell
 # All commands assume you're in NeoWarewholesale.API folder
 
 # Create migration

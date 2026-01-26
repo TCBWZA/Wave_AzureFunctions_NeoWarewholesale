@@ -61,70 +61,80 @@ Returns information about supported suppliers.
 
 ## Testing the Endpoints
 
-### Test Speedy Order (using curl)
-```bash
-curl -X POST http://localhost:5000/api/externalorders/fromspeedy \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerId": 1,
-    "orderTimestamp": "2024-01-15T10:30:00Z",
-    "shipTo": {
-      "streetAddress": "123 Main St",
-      "city": "London",
-      "region": "Greater London",
-      "postCode": "SW1A 1AA",
-      "country": "United Kingdom"
-    },
-    "billTo": {
-      "streetAddress": "123 Main St",
-      "city": "London",
-      "region": "Greater London",
-      "postCode": "SW1A 1AA",
-      "country": "United Kingdom"
-    },
-    "lineItems": [
-      {
-        "productId": 1,
-        "qty": 5,
-        "unitPrice": 29.99
-      }
-    ],
-    "priority": "express"
-  }'
+### Test Speedy Order (using PowerShell)
+```powershell
+$speedyOrder = @"
+{
+  "customerId": 1,
+  "orderTimestamp": "2024-01-15T10:30:00Z",
+  "shipTo": {
+    "streetAddress": "123 Main St",
+    "city": "London",
+    "region": "Greater London",
+    "postCode": "SW1A 1AA",
+    "country": "United Kingdom"
+  },
+  "billTo": {
+    "streetAddress": "123 Main St",
+    "city": "London",
+    "region": "Greater London",
+    "postCode": "SW1A 1AA",
+    "country": "United Kingdom"
+  },
+  "lineItems": [
+    {
+      "productId": 1,
+      "qty": 5,
+      "unitPrice": 29.99
+    }
+  ],
+  "priority": "express"
+}
+"@
+
+Invoke-RestMethod -Uri "http://localhost:5000/api/externalorders/fromspeedy" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $speedyOrder
 ```
 
-### Test Vault Order (using curl)
-```bash
-curl -X POST http://localhost:5000/api/externalorders/fromvault \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerEmail": "user@example.com",
-    "placedAt": 1705315800,
-    "deliveryDetails": {
-      "billingLocation": {
-        "addressLine": "456 High Street",
-        "cityName": "Manchester",
-        "stateProvince": "Greater Manchester",
-        "zipPostal": "M1 1AA",
-        "countryCode": "GB"
-      },
-      "shippingLocation": {
-        "addressLine": "456 High Street",
-        "cityName": "Manchester",
-        "stateProvince": "Greater Manchester",
-        "zipPostal": "M1 1AA",
-        "countryCode": "GB"
-      }
+### Test Vault Order (using PowerShell)
+```powershell
+$vaultOrder = @"
+{
+  "customerEmail": "user@example.com",
+  "placedAt": 1705315800,
+  "deliveryDetails": {
+    "billingLocation": {
+      "addressLine": "456 High Street",
+      "cityName": "Manchester",
+      "stateProvince": "Greater Manchester",
+      "zipPostal": "M1 1AA",
+      "countryCode": "GB"
     },
-    "items": [
-      {
-        "productCode": "550e8400-e29b-41d4-a716-446655440000",
-        "quantityOrdered": 3,
-        "pricePerUnit": 49.99
-      }
-    ],
-    "fulfillmentInstructions": "Handle with care"
-  }'
+    "shippingLocation": {
+      "addressLine": "456 High Street",
+      "cityName": "Manchester",
+      "stateProvince": "Greater Manchester",
+      "zipPostal": "M1 1AA",
+      "countryCode": "GB"
+    }
+  },
+  "items": [
+    {
+      "productCode": "550e8400-e29b-41d4-a716-446655440000",
+      "quantityOrdered": 3,
+      "pricePerUnit": 49.99
+    }
+  ],
+  "fulfillmentInstructions": "Handle with care"
+}
+"@
+
+Invoke-RestMethod -Uri "http://localhost:5000/api/externalorders/fromvault" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $vaultOrder
 ```
 
 **Note:** Replace `550e8400-e29b-41d4-a716-446655440000` with an actual ProductCode from your database.
@@ -132,17 +142,17 @@ curl -X POST http://localhost:5000/api/externalorders/fromvault \
 ## Converting to Azure Functions
 
 ### Step 1: Create Azure Function Projects
-```bash
+```powershell
 func init SpeedyOrderFunction --dotnet
 func init VaultOrderFunction --dotnet
 ```
 
 ### Step 2: Create HTTP Trigger Functions
-```bash
+```powershell
 cd SpeedyOrderFunction
 func new --name ProcessSpeedyOrder --template "HTTP trigger"
 
-cd ../VaultOrderFunction
+cd ..\VaultOrderFunction
 func new --name ProcessVaultOrder --template "HTTP trigger"
 ```
 

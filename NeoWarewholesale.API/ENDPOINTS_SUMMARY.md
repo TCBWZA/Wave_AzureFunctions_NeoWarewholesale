@@ -219,45 +219,65 @@ The ExternalOrdersController now has **4 main endpoints** demonstrating differen
 ## Testing Examples
 
 ### Test Transformation (No Save)
-```bash
+```powershell
 # Speedy - Transform only
-curl -X POST http://localhost:5000/api/externalorders/fromspeedy \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerId": 1,
-    "orderTimestamp": "2024-01-15T10:30:00Z",
-    "lineItems": [{"productId": 1, "qty": 5, "unitPrice": 29.99}]
-  }'
+$speedyBody = @"
+{
+  "customerId": 1,
+  "orderTimestamp": "2024-01-15T10:30:00Z",
+  "lineItems": [{"productId": 1, "qty": 5, "unitPrice": 29.99}]
+}
+"@
+
+Invoke-RestMethod -Uri "http://localhost:5000/api/externalorders/fromspeedy" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $speedyBody
 
 # Vault - Transform with lookup
-curl -X POST http://localhost:5000/api/externalorders/fromvault \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerEmail": "user@example.com",
-    "placedAt": 1705315800,
-    "items": [{"productCode": "550e8400-e29b-41d4-a716-446655440000", "quantityOrdered": 3, "pricePerUnit": 49.99}]
-  }'
+$vaultBody = @"
+{
+  "customerEmail": "user@example.com",
+  "placedAt": 1705315800,
+  "items": [{"productCode": "550e8400-e29b-41d4-a716-446655440000", "quantityOrdered": 3, "pricePerUnit": 49.99}]
+}
+"@
+
+Invoke-RestMethod -Uri "http://localhost:5000/api/externalorders/fromvault" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $vaultBody
 ```
 
 ### Test Full Integration (With Save)
-```bash
+```powershell
 # Speedy - Create and save
-curl -X POST http://localhost:5000/api/externalorders/speedycreate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerId": 1,
-    "orderTimestamp": "2024-01-15T10:30:00Z",
-    "lineItems": [{"productId": 1, "qty": 5, "unitPrice": 29.99}]
-  }'
+$speedyCreateBody = @"
+{
+  "customerId": 1,
+  "orderTimestamp": "2024-01-15T10:30:00Z",
+  "lineItems": [{"productId": 1, "qty": 5, "unitPrice": 29.99}]
+}
+"@
+
+Invoke-RestMethod -Uri "http://localhost:5000/api/externalorders/speedycreate" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $speedyCreateBody
 
 # Vault - Create and save
-curl -X POST http://localhost:5000/api/externalorders/vaultcreate \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerEmail": "user@example.com",
-    "placedAt": 1705315800,
-    "items": [{"productCode": "550e8400-e29b-41d4-a716-446655440000", "quantityOrdered": 3, "pricePerUnit": 49.99}]
-  }'
+$vaultCreateBody = @"
+{
+  "customerEmail": "user@example.com",
+  "placedAt": 1705315800,
+  "items": [{"productCode": "550e8400-e29b-41d4-a716-446655440000", "quantityOrdered": 3, "pricePerUnit": 49.99}]
+}
+"@
+
+Invoke-RestMethod -Uri "http://localhost:5000/api/externalorders/vaultcreate" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $vaultCreateBody
 ```
 
 ---
