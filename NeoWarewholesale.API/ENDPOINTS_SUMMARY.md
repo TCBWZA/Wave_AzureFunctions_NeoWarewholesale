@@ -1,4 +1,4 @@
-# External Orders API Endpoints - Summary
+﻿# External Orders API Endpoints - Summary
 
 ## Overview
 The ExternalOrdersController now has **4 main endpoints** demonstrating different levels of integration:
@@ -44,7 +44,7 @@ The ExternalOrdersController now has **4 main endpoints** demonstrating differen
 - **Process**:
   - Accepts Vault JSON
   - Validates ProductCodes exist
-  - Resolves ProductCode (Guid) ? ProductId (long)
+  - Resolves ProductCode (Guid) → ProductId (long)
   - Transforms to internal Order model
   - Returns transformed Order with resolution details
   - **DOES NOT SAVE** to database
@@ -113,7 +113,7 @@ The ExternalOrdersController now has **4 main endpoints** demonstrating differen
 - **Process**:
   - Accepts Vault JSON
   - Validates ProductCodes exist
-  - Resolves ProductCode ? ProductId
+  - Resolves ProductCode → ProductId
   - Transforms to internal Order model
   - **Saves to database** using Entity Framework (via repository)
   - Returns created order with ID and resolution details
@@ -182,9 +182,9 @@ The ExternalOrdersController now has **4 main endpoints** demonstrating differen
 
 | Aspect | `fromspeedy` / `fromvault` | `speedycreate` / `vaultcreate` |
 |--------|---------------------------|-------------------------------|
-| **Transformation** | ? Yes | ? Yes |
-| **Validation** | ? No | ? Yes |
-| **Database Save** | ? No | ? Yes (EF Core) |
+| **Transformation** | ✅ Yes | ✅ Yes |
+| **Validation** | ❌ No | ✅ Yes |
+| **Database Save** | ❌ No | ✅ Yes (EF Core) |
 | **Returns** | Transformed JSON | Created order with DB ID |
 | **Status Code** | 200 OK | 201 Created |
 | **Side Effects** | None | Order persisted to DB |
@@ -196,7 +196,7 @@ The ExternalOrdersController now has **4 main endpoints** demonstrating differen
 
 ### Level 1: Understanding Transformation
 1. Call `POST /api/externalorders/fromspeedy` 
-2. See how Speedy format ? Internal Order
+2. See how Speedy format → Internal Order
 3. Understand field mappings
 
 ### Level 2: Complex Transformation
@@ -273,10 +273,10 @@ curl -X POST http://localhost:5000/api/externalorders/vaultcreate \
 6. **Azure Functions**: Each endpoint maps to a potential function
 
 ### Azure Functions Migration:
-- `fromspeedy` ? Testing/utility function
-- `fromvault` ? Testing/utility function
-- `speedycreate` ? Production webhook handler
-- `vaultcreate` ? Production webhook handler
+- `fromspeedy` → Testing/utility function
+- `fromvault` → Testing/utility function
+- `speedycreate` → Production webhook handler
+- `vaultcreate` → Production webhook handler
 
 ---
 

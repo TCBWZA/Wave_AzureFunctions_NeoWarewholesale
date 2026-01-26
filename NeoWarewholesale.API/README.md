@@ -71,7 +71,7 @@ For PostgreSQL (requires Npgsql.EntityFrameworkCore.PostgreSQL package):
 
 ### 3. Install EF Core Tools (LOCAL Installation)
 
-?? **IMPORTANT for Corporate Workstations**: If you have issues with global tool installs, use **local installation** instead.
+⚠️ **IMPORTANT for Corporate Workstations**: If you have issues with global tool installs, use **local installation** instead.
 
 #### Option A: Local Tool Manifest (Recommended for Corp Environments)
 
@@ -151,7 +151,7 @@ The API will be available at:
 
 ### 6. Database Seeding (Important!)
 
-?? **AUTOMATIC DATA SEEDING ON FIRST RUN**
+⚠️ **AUTOMATIC DATA SEEDING ON FIRST RUN**
 
 The application includes **automatic database seeding** that populates the database with sample data on first run.
 
@@ -160,10 +160,10 @@ The application includes **automatic database seeding** that populates the datab
 **Condition**: Seeding will **ONLY** run if the `Customers` table is **empty**.
 
 **What Gets Seeded:**
-- ? 2 Suppliers (Speedy, Vault)
-- ? 10 Customers with addresses
-- ? 20 Products with ProductCodes (GUIDs)
-- ? 5 Sample orders with order items
+- ✅ 2 Suppliers (Speedy, Vault)
+- ✅ 10 Customers with addresses
+- ✅ 20 Products with ProductCodes (GUIDs)
+- ✅ 5 Sample orders with order items
 
 **Configuration** (in `appsettings.json`):
 ```json
@@ -213,7 +213,7 @@ SELECT COUNT(*) FROM Products;   -- Should have 20 records
 SELECT COUNT(*) FROM Suppliers;  -- Should have 2 records
 ```
 
-?? **Important Notes:**
+⚠️ **Important Notes:**
 - Seeding runs **automatically** on application startup
 - Seeding is **skipped** if `Customers` table already has data
 - This prevents duplicate data on subsequent runs
@@ -448,7 +448,7 @@ See [AZURE_FUNCTIONS_LAB_INSTRUCTIONS.md](AZURE_FUNCTIONS_LAB_INSTRUCTIONS.md) f
 }
 ```
 
-?? **Database Seeding Configuration**:
+⚠️ **Database Seeding Configuration**:
 - **`Enabled: true`** - Allows database seeding to run
 - **`SeedOnStartup: true`** - Seeds database automatically on application startup
 - **Condition**: Only seeds if `Customers` table is empty
