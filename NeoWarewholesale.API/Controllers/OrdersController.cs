@@ -30,7 +30,9 @@ namespace NeoWarewholesale.API.Controllers
         /// Retrieves all orders with optional related data.
         /// By default, includes OrderItems and Products to show order details.
         /// </summary>
+        /// <response code="200">Returns all orders.</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<OrderDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetAll([FromQuery] bool includeRelated = true)
         {
             var orders = await _orderRepository.GetAllAsync(includeRelated);
@@ -67,7 +69,11 @@ namespace NeoWarewholesale.API.Controllers
         /// GET /api/orders/{id}
         /// Retrieves a specific order by ID.
         /// </summary>
+        /// <response code="200">Order found and returned successfully.</response>
+        /// <response code="404">Order with the specified ID was not found.</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<OrderDto>> GetById(long id)
         {
             var order = await _orderRepository.GetByIdAsync(id, includeRelated: true);
@@ -112,27 +118,34 @@ namespace NeoWarewholesale.API.Controllers
         /// <summary>
         /// POST /api/orders
         /// Creates a new order with order items.
-        /// 
+        /// </summary>
+        /// <remarks>
         /// Request body example:
         /// {
         ///   "customerId": 1,
         ///   "supplierId": 1,
         ///   "orderDate": "2024-01-15T00:00:00Z",
+        ///   "billingAddress": {
+        ///     "street": "123 Main St",
+        ///     "city": "London",
+        ///     "county": "Greater London",
+        ///     "postalCode": "SW1A 1AA",
+        ///     "country": "UK"
+        ///   },
         ///   "orderItems": [
         ///     {
         ///       "productId": 1,
         ///       "quantity": 5,
         ///       "price": 29.99
-        ///     },
-        ///     {
-        ///       "productId": 2,
-        ///       "quantity": 3,
-        ///       "price": 49.99
         ///     }
         ///   ]
         /// }
-        /// </summary>
+        /// </remarks>
+        /// <response code="201">Order created successfully. Returns the created order with ID.</response>
+        /// <response code="400">Validation failed. Returns details about validation errors, missing customer, supplier, or products.</response>
         [HttpPost]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<OrderDto>> Create([FromBody] CreateOrderDto dto)
         {
             // Validate using FluentValidation
@@ -173,7 +186,13 @@ namespace NeoWarewholesale.API.Controllers
         /// PUT /api/orders/{id}
         /// Updates an existing order.
         /// </summary>
+        /// <response code="200">Order updated successfully. Returns the updated order.</response>
+        /// <response code="400">Validation failed or referenced entities don't exist.</response>
+        /// <response code="404">Order with the specified ID was not found.</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(OrderDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<OrderDto>> Update(long id, [FromBody] UpdateOrderDto dto)
         {
             // Validate using FluentValidation
@@ -218,7 +237,11 @@ namespace NeoWarewholesale.API.Controllers
         /// DELETE /api/orders/{id}
         /// Deletes an order by ID.
         /// </summary>
+        /// <response code="204">Order deleted successfully.</response>
+        /// <response code="404">Order with the specified ID was not found.</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete(long id)
         {
             var deleted = await _orderRepository.DeleteAsync(id);

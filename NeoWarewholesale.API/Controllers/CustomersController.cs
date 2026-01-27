@@ -14,7 +14,13 @@ namespace NeoWarewholesale.API.Controllers
         private readonly ICustomerRepository _customerRepository = customerRepository;
         private readonly ILogger<CustomersController> _logger = logger;
 
+        /// <summary>
+        /// GET /api/customers
+        /// Retrieves all customers with optional related data.
+        /// </summary>
+        /// <response code="200">Returns all customers.</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<CustomerDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<CustomerDto>>> GetAll([FromQuery] bool includeRelated = false)
         {
             var customers = await _customerRepository.GetAllAsync(includeRelated);
@@ -46,7 +52,9 @@ namespace NeoWarewholesale.API.Controllers
         /// - Collections have many items per parent
         /// - Large datasets (1000+ parent records)
         /// </summary>
+        /// <response code="200">Returns all customers with phone numbers loaded via split queries.</response>
         [HttpGet("with-split-queries")]
+        [ProducesResponseType(typeof(IEnumerable<CustomerDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<CustomerDto>>> GetAllWithSplitQueries()
         {
             var customers = await _customerRepository.GetAllAsync(includeRelated: true);
@@ -84,7 +92,9 @@ namespace NeoWarewholesale.API.Controllers
         /// - Create indexes on Name and Email columns
         /// - Consider adding pagination for large result sets
         /// </summary>
+        /// <response code="200">Returns customers matching the search criteria.</response>
         [HttpGet("search")]
+        [ProducesResponseType(typeof(IEnumerable<CustomerDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<CustomerDto>>> Search(
             [FromQuery] string? name,
             [FromQuery] string? email)
@@ -122,7 +132,9 @@ namespace NeoWarewholesale.API.Controllers
         /// - Create indexes on frequently sorted columns
         /// - Combine with pagination for better UX on large datasets
         /// </summary>
+        /// <response code="200">Returns sorted customers.</response>
         [HttpGet("sorted")]
+        [ProducesResponseType(typeof(IEnumerable<CustomerDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<CustomerDto>>> GetSorted(
             [FromQuery] string sortBy = "name",
             [FromQuery] bool descending = false)
@@ -148,7 +160,15 @@ namespace NeoWarewholesale.API.Controllers
             return Ok(query.Select(c => c.ToDto()));
         }
 
+        /// <summary>
+        /// GET /api/customers/{id}
+        /// Retrieves a specific customer by ID with related phone numbers.
+        /// </summary>
+        /// <response code="200">Customer found and returned.</response>
+        /// <response code="404">Customer with the specified ID was not found.</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CustomerDto>> GetById(long id)
         {
             var customer = await _customerRepository.GetByIdAsync(id, includeRelated: true);
@@ -158,7 +178,15 @@ namespace NeoWarewholesale.API.Controllers
             return Ok(customer.ToDto());
         }
 
+        /// <summary>
+        /// GET /api/customers/email/{email}
+        /// Retrieves a customer by email address.
+        /// </summary>
+        /// <response code="200">Customer found and returned.</response>
+        /// <response code="404">Customer with the specified email was not found.</response>
         [HttpGet("email/{email}")]
+        [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<CustomerDto>> GetByEmail(string email)
         {
             var customer = await _customerRepository.GetByEmailAsync(email);
@@ -200,7 +228,13 @@ namespace NeoWarewholesale.API.Controllers
         /// 
         /// Note: PhoneNumbers are optional - you can create a customer without them.
         /// </summary>
+        /// <response code="201">Customer created successfully. Returns the created customer with ID.</response>
+        /// <response code="400">Invalid request body or validation failed.</response>
+        /// <response code="409">A customer with the specified email already exists.</response>
         [HttpPost]
+        [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<CustomerDto>> Create([FromBody] CreateCustomerDto dto)
         {
             if (!ModelState.IsValid)
@@ -216,7 +250,19 @@ namespace NeoWarewholesale.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = created.Id }, created.ToDto());
         }
 
+        /// <summary>
+        /// PUT /api/customers/{id}
+        /// Updates an existing customer.
+        /// </summary>
+        /// <response code="200">Customer updated successfully. Returns the updated customer.</response>
+        /// <response code="400">Invalid request body or validation failed.</response>
+        /// <response code="404">Customer with the specified ID was not found.</response>
+        /// <response code="409">A customer with the specified email already exists.</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<CustomerDto>> Update(long id, [FromBody] UpdateCustomerDto dto)
         {
             if (!ModelState.IsValid)
@@ -236,7 +282,15 @@ namespace NeoWarewholesale.API.Controllers
             return Ok(updated.ToDto());
         }
 
+        /// <summary>
+        /// DELETE /api/customers/{id}
+        /// Deletes a customer by ID.
+        /// </summary>
+        /// <response code="204">Customer deleted successfully.</response>
+        /// <response code="404">Customer with the specified ID was not found.</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete(long id)
         {
             var deleted = await _customerRepository.DeleteAsync(id);

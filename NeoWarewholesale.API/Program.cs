@@ -3,6 +3,7 @@ using NeoWarewholesale.API;
 using NeoWarewholesale.API.Models;
 using NeoWarewholesale.API.Repositories;
 using FluentValidation;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,7 @@ builder.Services.AddScoped<ITelephoneNumberRepository, TelephoneNumberRepository
 // Configure SeedSettings
 builder.Services.Configure<SeedSettings>(builder.Configuration.GetSection("SeedSettings"));
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Configure OpenAPI/Scalar documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -60,8 +61,21 @@ if (seedSettings?.EnableSeeding == true)
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // Enable Swagger middleware to generate OpenAPI document
+    app.UseSwagger(options =>
+    {
+        options.RouteTemplate = "openapi/{documentName}.json";
+    });
+    
+    // Use Scalar for API documentation (NOT SwaggerUI)
+    app.MapScalarApiReference(options =>
+    {
+        options
+            .WithTitle("NeoWarewholesale API")
+            .WithTheme(ScalarTheme.Purple)
+            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
+            .WithOpenApiRoutePattern("/openapi/{documentName}.json");
+    });
 }
 
 app.UseAuthorization();

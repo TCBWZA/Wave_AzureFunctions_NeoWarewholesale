@@ -18,7 +18,9 @@ namespace NeoWarewholesale.API.Controllers
         /// GET /api/suppliers
         /// Retrieves all suppliers.
         /// </summary>
+        /// <response code="200">Returns all suppliers.</response>
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<SupplierDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<SupplierDto>>> GetAll()
         {
             var suppliers = await _supplierRepository.GetAllAsync();
@@ -29,7 +31,11 @@ namespace NeoWarewholesale.API.Controllers
         /// GET /api/suppliers/{id}
         /// Retrieves a specific supplier by ID.
         /// </summary>
+        /// <response code="200">Supplier found and returned.</response>
+        /// <response code="404">Supplier with the specified ID was not found.</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(typeof(SupplierDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SupplierDto>> GetById(long id)
         {
             var supplier = await _supplierRepository.GetByIdAsync(id);
@@ -43,7 +49,11 @@ namespace NeoWarewholesale.API.Controllers
         /// GET /api/suppliers/name/{name}
         /// Retrieves a specific supplier by name.
         /// </summary>
+        /// <response code="200">Supplier found and returned.</response>
+        /// <response code="404">Supplier with the specified name was not found.</response>
         [HttpGet("name/{name}")]
+        [ProducesResponseType(typeof(SupplierDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<SupplierDto>> GetByName(string name)
         {
             var supplier = await _supplierRepository.GetByNameAsync(name);
@@ -57,7 +67,13 @@ namespace NeoWarewholesale.API.Controllers
         /// POST /api/suppliers
         /// Creates a new supplier.
         /// </summary>
+        /// <response code="201">Supplier created successfully.</response>
+        /// <response code="400">Invalid request body or validation failed.</response>
+        /// <response code="409">A supplier with the specified name already exists.</response>
         [HttpPost]
+        [ProducesResponseType(typeof(SupplierDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<SupplierDto>> Create([FromBody] CreateSupplierDto dto)
         {
             if (!ModelState.IsValid)
@@ -77,7 +93,15 @@ namespace NeoWarewholesale.API.Controllers
         /// PUT /api/suppliers/{id}
         /// Updates an existing supplier.
         /// </summary>
+        /// <response code="200">Supplier updated successfully.</response>
+        /// <response code="400">Invalid request body or validation failed.</response>
+        /// <response code="404">Supplier with the specified ID was not found.</response>
+        /// <response code="409">A supplier with the specified name already exists.</response>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(SupplierDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<SupplierDto>> Update(long id, [FromBody] UpdateSupplierDto dto)
         {
             if (!ModelState.IsValid)
@@ -101,7 +125,11 @@ namespace NeoWarewholesale.API.Controllers
         /// DELETE /api/suppliers/{id}
         /// Deletes a supplier by ID.
         /// </summary>
+        /// <response code="204">Supplier deleted successfully.</response>
+        /// <response code="404">Supplier with the specified ID was not found.</response>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Delete(long id)
         {
             var deleted = await _supplierRepository.DeleteAsync(id);

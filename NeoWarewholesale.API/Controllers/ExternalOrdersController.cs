@@ -1,4 +1,4 @@
-using NeoWarewholesale.API.DTOs.External;
+﻿using NeoWarewholesale.API.DTOs.External;
 using NeoWarewholesale.API.Mappings;
 using NeoWarewholesale.API.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -38,19 +38,13 @@ namespace NeoWarewholesale.API.Controllers
         /// 
         /// Teaching Point: Shows data transformation without persistence.
         /// Use /speedycreate to actually save the order.
-        /// 
+        /// </summary>
+        /// <remarks>
         /// Example Request Body:
         /// {
         ///   "customerId": 1,
         ///   "orderTimestamp": "2024-01-15T10:30:00Z",
         ///   "shipTo": {
-        ///     "streetAddress": "123 Main St",
-        ///     "city": "London",
-        ///     "region": "Greater London",
-        ///     "postCode": "SW1A 1AA",
-        ///     "country": "United Kingdom"
-        ///   },
-        ///   "billTo": {
         ///     "streetAddress": "123 Main St",
         ///     "city": "London",
         ///     "region": "Greater London",
@@ -63,11 +57,14 @@ namespace NeoWarewholesale.API.Controllers
         ///       "qty": 5,
         ///       "unitPrice": 29.99
         ///     }
-        ///   ],
-        ///   "priority": "express"
+        ///   ]
         /// }
-        /// </summary>
+        /// </remarks>
+        /// <response code="200">Order transformed successfully. Returns the internal Order representation.</response>
+        /// <response code="400">Invalid request body or validation failed.</response>
         [HttpPost("fromspeedy")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<object>> OrderFromSpeedy([FromBody] SpeedyOrderDto speedyOrder)
         {
             _logger.LogInformation("Transforming order from Speedy format (no save)");
@@ -248,7 +245,13 @@ namespace NeoWarewholesale.API.Controllers
         /// 
         /// This demonstrates the complete workflow that would be in an Azure Function.
         /// </summary>
+        /// <response code="201">Order created and saved successfully. Returns order details with generated ID.</response>
+        /// <response code="400">Validation failed. Customer or products don't exist, or invalid request body.</response>
+        /// <response code="500">Internal server error during order processing.</response>
         [HttpPost("speedycreate")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<object>> SpeedyCreate([FromBody] SpeedyOrderDto speedyOrder)
         {
             _logger.LogInformation("Creating and saving order from Speedy supplier");
@@ -402,11 +405,17 @@ namespace NeoWarewholesale.API.Controllers
         /// and SAVES using Entity Framework.
         /// 
         /// Teaching Point: Shows full integration with complex data transformation.
-        /// Demonstrates ProductCode ? ProductId resolution and async operations with EF Core.
+        /// Demonstrates ProductCode → ProductId resolution and async operations with EF Core.
         /// 
         /// This demonstrates a more complex workflow suitable for Azure Functions with database access.
         /// </summary>
+        /// <response code="201">Order created and saved successfully. Returns order details with ProductCode resolution info.</response>
+        /// <response code="400">Validation failed. ProductCodes don't exist or invalid request body.</response>
+        /// <response code="500">Internal server error during order processing.</response>
         [HttpPost("vaultcreate")]
+        [ProducesResponseType(typeof(object), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(object), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<object>> VaultCreate([FromBody] VaultOrderDto vaultOrder)
         {
             _logger.LogInformation("Creating and saving order from Vault supplier");
