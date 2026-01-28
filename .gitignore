@@ -347,7 +347,7 @@ __azurite_db*__.json
 # AZURE FUNCTIONS EXAMPLES - Work in Progress
 # Location: NeoWarewholesale.API/AZURE_FUNCTIONS_EXAMPLES.md
 # Reason: Still under development, contains incomplete/experimental code examples
-NeoWarewholesale.API/AZURE_FUNCTIONS_EXAMPLES.md
+# NeoWarewholesale.API/AZURE_FUNCTIONS_EXAMPLES.md
 
 # Database files (if using LocalDB)
 *.mdf

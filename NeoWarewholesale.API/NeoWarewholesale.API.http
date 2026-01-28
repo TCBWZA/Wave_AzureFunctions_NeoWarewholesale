@@ -1,4 +1,4 @@
-@NeoWarewholesale.API_HostAddress = http://localhost:5155
+@NeoWarewholesale.API_HostAddress = http://localhost:5143
 @ContentType = application/json
 
 ###############################################################################
