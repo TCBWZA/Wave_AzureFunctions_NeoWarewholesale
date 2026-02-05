@@ -17,13 +17,53 @@ namespace NeoWarewholesale.API.Controllers
         }
 
         /// <summary>
-        /// Performs a health check of the API and database connectivity.
+        /// EXAMPLE: Health check with database connectivity verification
+        /// 
+        /// GET /api/healthcheck/status
+        /// 
+        /// Performs a comprehensive health check of the API and verifies database connectivity.
+        /// This endpoint is useful for monitoring systems, load balancers, and orchestration platforms
+        /// to determine if the service is healthy and capable of handling requests.
+        /// 
+        /// Response when healthy (200 OK):
+        /// {
+        ///   "status": "Good",
+        ///   "timestamp": "2025-01-25T12:34:56.789Z",
+        ///   "checks": {
+        ///     "application": "Running",
+        ///     "database": "Available"
+        ///   },
+        ///   "errors": null
+        /// }
+        /// 
+        /// Response when unhealthy (503 Service Unavailable):
+        /// {
+        ///   "status": "Unhealthy",
+        ///   "timestamp": "2025-01-25T12:34:56.789Z",
+        ///   "checks": {
+        ///     "application": "Running",
+        ///     "database": "Unavailable"
+        ///   },
+        ///   "errors": ["Database server is not available"]
+        /// }
+        /// 
+        /// Status Codes:
+        /// - 200 OK: Application and database are both healthy
+        /// - 503 Service Unavailable: Database is unreachable or other critical services are down
+        /// 
+        /// Use Cases:
+        /// - Kubernetes liveness and readiness probes
+        /// - Azure Application Insights monitoring
+        /// - Load balancer health checks
+        /// - CI/CD deployment verification
+        /// - Uptime monitoring services
         /// </summary>
-        /// <returns>Health status with details about database availability</returns>
+        /// <response code="200">API and database are healthy and operational.</response>
+        /// <response code="503">Service is unavailable - database cannot be reached or another critical service is down.</response>
         [HttpGet]
         [Route("status")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
+        [ProducesResponseType(typeof(HealthCheckResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(HealthCheckResponse), StatusCodes.Status503ServiceUnavailable)]
         public async Task<ActionResult<HealthCheckResponse>> GetHealthStatus()
         {
             var response = new HealthCheckResponse
