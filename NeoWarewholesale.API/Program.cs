@@ -13,6 +13,9 @@ builder.Services.AddControllers();
 // Add FluentValidation - automatically validates models
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
+// Add Health Checks
+builder.Services.AddHealthChecks();
+
 // Configure Entity Framework Core with SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -81,6 +84,9 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Map health check endpoint
+app.MapHealthChecks("/health");
 
 app.Run();
 
